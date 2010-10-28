@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 from PMS import *
-import re, urllib
+import re
 
 ESCAPIST_PREFIX = '/video/escapist'
 
 ESCAPIST_URL            = 'http://www.escapistmagazine.com'
 ESCAPIST_GALERIES       = ESCAPIST_URL + '/vidoes/galleries'
 ESCAPIST_HIGHLIGHTS     = ESCAPIST_URL + '/ajax/videos_index.php?videos_type=%s'
-CACHE_INTERVAL    = 3600
 
 def Start():
 
@@ -17,9 +16,8 @@ def Start():
   MediaContainer.art = R('art-default.jpg')
   MediaContainer.viewGroup = 'Details'
   MediaContainer.title1 = L('theescapist')
-  HTTP.SetCacheTime(CACHE_INTERVAL)
-  HTTP.Headers['User-Agent'] = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2'
-
+  HTTP.SetCacheTime(CACHE_1HOUR)
+  HTTP.SetHeader('User-Agent', 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; en-US; rv:1.9.2.12) Gecko/20101026 Firefox/3.6.12')
 
 def MainMenu():
 
@@ -111,7 +109,8 @@ def PlayVideo(sender, url):
 
   configElement = page.xpath("//div[@id='video_embed']//embed")[0].get('flashvars')
   configUrl = re.search(r'config=(.*)', configElement).group(1)
-  configUrl = urllib.quote(urllib.unquote(configUrl))
+  configUrl = String.Unquote(configUrl, usePlus=True)
+#  configUrl = urllib.quote(urllib.unquote(configUrl))
   jsonString = HTTP.Request("http://surf-proxy.de/index.php?q="+(configUrl))
 #  jsonString = HTTP.Request(urllib.unquote(configUrl.strip()))
 #  Log(jsonString)
