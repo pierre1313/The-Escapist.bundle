@@ -92,7 +92,7 @@ def HighlightBrowser(sender, mode):
     title = episode.xpath(".//div[@class='title']")[0].text
     date = episode.xpath(".//div[@class='date']")[0].text
     url = episode.xpath(".//a")[0].get('href')
-    if url[0:3] != 'http':
+    if url[0:4] != 'http':
       url = ESCAPIST_URL + url
     thumb = episode.xpath(".//img")[0].get('src')
 
