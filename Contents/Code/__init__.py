@@ -63,7 +63,7 @@ def ShowBrowser(sender, showUrl, showName, showThumb, pageNumber=1):
     title = episode.xpath(".//div[@class='title']")[0].text
     date = episode.xpath(".//div[@class='date']")[0].text
     url = episode.xpath(".//a")[0].get('href')
-    Log(url[0:4])
+#    Log(url[0:4])
     if url[0:4] != 'http':
       url = ESCAPIST_URL + url
     
@@ -103,19 +103,16 @@ def HighlightBrowser(sender, mode):
 def PlayVideo(sender, url):
 
   # Find the FLV for the episode and redirect to it
-  Log(url)
+#  Log(url)
   rawpage = HTTP.Request(url).replace('&lt;','<').replace('&gt;','>').replace('&quot;','"')
   page = XML.ElementFromString(rawpage, isHTML=True)
 
   configElement = page.xpath("//div[@id='video_embed']//embed")[0].get('flashvars')
   configUrl = re.search(r'config=(.*)', configElement).group(1)
   configUrl = String.Unquote(configUrl, usePlus=True)
-#  configUrl = urllib.quote(urllib.unquote(configUrl))
-  jsonString = HTTP.Request("http://surf-proxy.de/index.php?q="+(configUrl))
-#  jsonString = HTTP.Request(urllib.unquote(configUrl.strip()))
+  jsonString = HTTP.Request("http://surf-proxy.de/index.php?q=" + String.Quote(configUrl, usePlus=True))
 #  Log(jsonString)
   config = JSON.ObjectFromString(jsonString)
   video = config['playlist'][1]['url']
 
   return Redirect(video)
-
