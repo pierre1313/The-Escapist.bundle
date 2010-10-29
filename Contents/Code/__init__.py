@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 from PMS import *
-import re, urllib
+import re
 
 ESCAPIST_PREFIX = '/video/escapist'
 
 ESCAPIST_URL            = 'http://www.escapistmagazine.com'
 ESCAPIST_GALERIES       = ESCAPIST_URL + '/vidoes/galleries'
 ESCAPIST_HIGHLIGHTS     = ESCAPIST_URL + '/ajax/videos_index.php?videos_type=%s'
-CACHE_INTERVAL    = 3600
 
 def Start():
 
@@ -17,9 +16,8 @@ def Start():
   MediaContainer.art = R('art-default.jpg')
   MediaContainer.viewGroup = 'Details'
   MediaContainer.title1 = L('theescapist')
-  HTTP.SetCacheTime(CACHE_INTERVAL)
-  HTTP.Headers['User-Agent'] = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2'
-
+  HTTP.SetCacheTime(CACHE_1HOUR)
+  HTTP.SetHeader('User-Agent', 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; en-US; rv:1.9.2.12) Gecko/20101026 Firefox/3.6.12')
 
 def MainMenu():
 
@@ -65,7 +63,7 @@ def ShowBrowser(sender, showUrl, showName, showThumb, pageNumber=1):
     title = episode.xpath(".//div[@class='title']")[0].text
     date = episode.xpath(".//div[@class='date']")[0].text
     url = episode.xpath(".//a")[0].get('href')
-    Log(url[0:4])
+#    Log(url[0:4])
     if url[0:4] != 'http':
       url = ESCAPIST_URL + url
     
@@ -94,7 +92,7 @@ def HighlightBrowser(sender, mode):
     title = episode.xpath(".//div[@class='title']")[0].text
     date = episode.xpath(".//div[@class='date']")[0].text
     url = episode.xpath(".//a")[0].get('href')
-    if url[0:3] != 'http':
+    if url[0:4] != 'http':
       url = ESCAPIST_URL + url
     thumb = episode.xpath(".//img")[0].get('src')
 
@@ -105,18 +103,16 @@ def HighlightBrowser(sender, mode):
 def PlayVideo(sender, url):
 
   # Find the FLV for the episode and redirect to it
-  Log(url)
+#  Log(url)
   rawpage = HTTP.Request(url).replace('&lt;','<').replace('&gt;','>').replace('&quot;','"')
   page = XML.ElementFromString(rawpage, isHTML=True)
 
   configElement = page.xpath("//div[@id='video_embed']//embed")[0].get('flashvars')
   configUrl = re.search(r'config=(.*)', configElement).group(1)
-  configUrl = urllib.quote(urllib.unquote(configUrl))
-  jsonString = HTTP.Request("http://surf-proxy.de/index.php?q="+(configUrl))
-#  jsonString = HTTP.Request(urllib.unquote(configUrl.strip()))
+  configUrl = String.Unquote(configUrl, usePlus=True)
+  jsonString = HTTP.Request("http://surf-proxy.de/index.php?q=" + String.Quote(configUrl, usePlus=True))
 #  Log(jsonString)
   config = JSON.ObjectFromString(jsonString)
   video = config['playlist'][1]['url']
 
   return Redirect(video)
-
