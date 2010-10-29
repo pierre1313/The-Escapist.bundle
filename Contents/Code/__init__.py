@@ -56,7 +56,7 @@ def ShowBrowser(sender, showUrl, showName, showThumb, pageNumber=1):
 
   page = XML.ElementFromURL(pageUrl, isHTML=True)
 
-  episodes = page.xpath("//div[@class='video']//div[@class='filmstrip_video']")
+  episodes = page.xpath("//div[@class='video']//div[@id='gallery_display']//div[@class='filmstrip_video']")
 
   for episode in episodes:
 
