@@ -15,8 +15,8 @@ def Start():
   MediaContainer.art = R('art-default.jpg')
   MediaContainer.viewGroup = 'Details'
   MediaContainer.title1 = L('theescapist')
-  HTTP.SetCacheTime(CACHE_1HOUR)
-  HTTP.SetHeader('User-Agent', 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; en-US; rv:1.9.2.12) Gecko/20101026 Firefox/3.6.12')
+  HTTP.CacheTime  = CACHE_1HOUR
+  HTTP.Headers['User-Agent'] = 'User-Agent', 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; en-US; rv:1.9.2.12) Gecko/20101026 Firefox/3.6.12'
 
 def MainMenu():
 
@@ -103,13 +103,13 @@ def PlayVideo(sender, url):
 
   # Find the FLV for the episode and redirect to it
 #  Log(url)
-  rawpage = HTTP.Request(url).replace('&lt;','<').content.replace('&gt;','>').replace('&quot;','"')
+  rawpage = HTTP.Request(url).content.replace('&lt;','<').replace('&gt;','>').replace('&quot;','"')
   page = HTML.ElementFromString(rawpage)
 
   configElement = page.xpath("//div[@id='video_embed']//embed")[0].get('flashvars')
   configUrl = re.search(r'config=(.*)', configElement).group(1)
   configUrl = String.Unquote(configUrl, usePlus=True)
-  jsonString = HTTP.Request("http://surf-proxy.de/index.php?q=" + String.Quote(configUrl, usePlus=True))
+  jsonString = HTTP.Request("http://surf-proxy.de/index.php?q=" + String.Quote(configUrl, usePlus=True)).content
 #  Log(jsonString)
   config = JSON.ObjectFromString(jsonString)
   video = config['playlist'][1]['url']
