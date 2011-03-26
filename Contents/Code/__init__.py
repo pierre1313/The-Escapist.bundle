@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from PMS import *
 import re
 
 ESCAPIST_PREFIX = '/video/escapist'
@@ -23,7 +22,7 @@ def MainMenu():
 
   dir = MediaContainer()
  
-  page = XML.ElementFromURL(ESCAPIST_URL + '/videos/galleries', isHTML=True)
+  page = HTML.ElementFromURL(ESCAPIST_URL + '/videos/galleries')
 
   # Add 'latest' and 'popular'
   dir.Append(Function(DirectoryItem(HighlightBrowser, title=L('latest'), thumb=R('icon-default.jpg'), summary=L('latest-summary')), mode='latest'))
@@ -54,7 +53,7 @@ def ShowBrowser(sender, showUrl, showName, showThumb, pageNumber=1):
     dir.title2 = showName
     pageUrl = showUrl
 
-  page = XML.ElementFromURL(pageUrl, isHTML=True)
+  page = HTML.ElementFromURL(pageUrl)
 
   episodes = page.xpath("//div[@class='video']//div[@id='gallery_display']//div[@class='filmstrip_video']")
 
@@ -83,7 +82,7 @@ def HighlightBrowser(sender, mode):
   dir = MediaContainer()
   dir.title2 = (mode)
 
-  page = XML.ElementFromURL(ESCAPIST_HIGHLIGHTS % mode, isHTML=True)
+  page = HTML.ElementFromURL(ESCAPIST_HIGHLIGHTS % mode)
 
   episodes = page.xpath("//div[@class='filmstrip_video']")
 
@@ -104,8 +103,8 @@ def PlayVideo(sender, url):
 
   # Find the FLV for the episode and redirect to it
 #  Log(url)
-  rawpage = HTTP.Request(url).replace('&lt;','<').replace('&gt;','>').replace('&quot;','"')
-  page = XML.ElementFromString(rawpage, isHTML=True)
+  rawpage = HTTP.Request(url).replace('&lt;','<').content.replace('&gt;','>').replace('&quot;','"')
+  page = HTML.ElementFromString(rawpage)
 
   configElement = page.xpath("//div[@id='video_embed']//embed")[0].get('flashvars')
   configUrl = re.search(r'config=(.*)', configElement).group(1)
