@@ -15,6 +15,10 @@ def Start():
   MediaContainer.art = R('art-default.jpg')
   MediaContainer.viewGroup = 'Details'
   MediaContainer.title1 = L('theescapist')
+  
+  DirectoryItem.thumb = R('icon-default.jpg')
+  VideoItem.thumb = R('icon-default.jpg')
+    
   HTTP.CacheTime  = CACHE_1HOUR
   HTTP.Headers['User-Agent'] = 'User-Agent', 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; en-US; rv:1.9.2.12) Gecko/20101026 Firefox/3.6.12'
 
@@ -37,9 +41,16 @@ def MainMenu():
     summary = show.xpath(".//div[@class='gallery_description']")[0].text
     thumb = show.xpath(".//div[@class='gallery_title_card']//img")[0].get('src')
     if title!= '':
-      dir.Append(Function(DirectoryItem(ShowBrowser, title=title, thumb=thumb, summary=summary), showUrl=url, showName=title, showThumb=thumb))
+      dir.Append(Function(DirectoryItem(ShowBrowser, title=title, thumb=Function(Thumb,url=thumb), summary=summary), showUrl=url, showName=title, showThumb=thumb))
 
   return dir
+  
+def Thumb(url):
+  try:
+    data = HTTP.Request(url, cacheTime=CACHE_1WEEK).content
+    return DataObject(data, 'image/jpeg')
+  except:
+    return Redirect(R('icon-default.jpg'))
 
 def ShowBrowser(sender, showUrl, showName, showThumb, pageNumber=1):
 
@@ -67,13 +78,14 @@ def ShowBrowser(sender, showUrl, showName, showThumb, pageNumber=1):
       url = ESCAPIST_URL + url
     
     thumb = episode.xpath(".//img")[0].get('src')
-
-    dir.Append(Function(VideoItem(PlayVideo, title=title, subtitle=date, duration='0', thumb=thumb), url=url))
+    Log(thumb)
+    
+    dir.Append(Function(VideoItem(PlayVideo, title=title, subtitle=date, duration='0', thumb=Function(Thumb,url=thumb)), url=url))
 
   # Check for a next page link
   if len ( page.xpath("//a[@class='next_page']")) > 0:
     pageNumber = pageNumber + 1
-    dir.Append(Function(DirectoryItem(ShowBrowser, title=L('nextpage'), thumb=showThumb, summary=L('nextpage')), showUrl=showUrl, showName=showName, showThumb=showThumb, pageNumber=pageNumber))
+    dir.Append(Function(DirectoryItem(ShowBrowser, title=L('nextpage'), thumb=Function(Thumb,url=showThumb), summary=L('nextpage')), showUrl=showUrl, showName=showName, showThumb=Function(Thumb,url=showThumb), pageNumber=pageNumber))
 
   return dir
 
@@ -94,8 +106,8 @@ def HighlightBrowser(sender, mode):
     if url[0:4] != 'http':
       url = ESCAPIST_URL + url
     thumb = episode.xpath(".//img")[0].get('src')
-
-    dir.Append(Function(VideoItem(PlayVideo, title=title, subtitle=date, duration='0', thumb=thumb), url=url))
+    
+    dir.Append(Function(VideoItem(PlayVideo, title=title, subtitle=date, duration='0', thumb=Function(Thumb,url=thumb)), url=url))
 
   return dir
 
