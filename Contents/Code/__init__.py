@@ -114,7 +114,7 @@ def PlayVideo(sender, url):
 
   # Find the FLV for the episode and redirect to it
 #  Log(url)
-  rawpage = HTTP.Request(url, values={"birth_day":"30","birth_month":"02","birth_year":"1980"}).content.replace('&lt;','<').replace('&gt;','>').replace('&quot;','"')
+  rawpage = HTTP.Request(url, values={"birth_day":"10","birth_month":"02","birth_year":"1980"}).content.replace('&lt;','<').replace('&gt;','>').replace('&quot;','"')
   page = HTML.ElementFromString(rawpage)
   Log(rawpage)
   configElement = page.xpath("//div[@id='video_embed']//embed")[0].get('flashvars')
