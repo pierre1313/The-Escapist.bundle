@@ -78,14 +78,13 @@ def ShowBrowser(sender, showUrl, showName, showThumb, pageNumber=1):
       url = ESCAPIST_URL + url
     
     thumb = episode.xpath(".//img")[0].get('src')
-    Log(thumb)
     
     dir.Append(Function(VideoItem(PlayVideo, title=title, subtitle=date, duration='0', thumb=Function(Thumb,url=thumb)), url=url))
 
   # Check for a next page link
   if len ( page.xpath("//a[@class='next_page']")) > 0:
     pageNumber = pageNumber + 1
-    dir.Append(Function(DirectoryItem(ShowBrowser, title=L('nextpage'), thumb=Function(Thumb,url=showThumb), summary=L('nextpage')), showUrl=showUrl, showName=showName, showThumb=Function(Thumb,url=showThumb), pageNumber=pageNumber))
+    dir.Append(Function(DirectoryItem(ShowBrowser, title=L('nextpage'), thumb=Function(Thumb,url=showThumb), summary=L('nextpage')), showUrl=showUrl, showName=showName, showThumb=showThumb, pageNumber=pageNumber))
 
   return dir
 
