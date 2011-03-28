@@ -20,7 +20,7 @@ def Start():
   VideoItem.thumb = R('icon-default.jpg')
     
   HTTP.CacheTime  = CACHE_1HOUR
-  HTTP.Headers['User-Agent'] = 'User-Agent', 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; en-US; rv:1.9.2.12) Gecko/20101026 Firefox/3.6.12'
+  HTTP.Headers['User-Agent'] = 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; en-US; rv:1.9.2.12) Gecko/20101026 Firefox/3.6.12'
 
 def MainMenu():
 
@@ -114,12 +114,13 @@ def PlayVideo(sender, url):
 
   # Find the FLV for the episode and redirect to it
 #  Log(url)
-  rawpage = HTTP.Request(url).content.replace('&lt;','<').replace('&gt;','>').replace('&quot;','"')
+  rawpage = HTTP.Request(url, values={"birth_day":"30","birth_month":"02","birth_year":"1980"}).content.replace('&lt;','<').replace('&gt;','>').replace('&quot;','"')
   page = HTML.ElementFromString(rawpage)
-
+  Log(rawpage)
   configElement = page.xpath("//div[@id='video_embed']//embed")[0].get('flashvars')
   configUrl = re.search(r'config=(.*)', configElement).group(1)
   configUrl = String.Unquote(configUrl, usePlus=True)
+  #jsonString = HTTP.Request(configUrl).content
   jsonString = HTTP.Request("http://surf-proxy.de/index.php?q=" + String.Quote(configUrl, usePlus=True)).content
 #  Log(jsonString)
   config = JSON.ObjectFromString(jsonString)
